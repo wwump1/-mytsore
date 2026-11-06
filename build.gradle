@@ -24,10 +24,6 @@ dependencies {
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
-    // Mod Menu нужен только для компиляции
-    modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
-}
-
 processResources {
     inputs.property "version", project.version
     filesMatching("fabric.mod.json") {
@@ -44,3 +40,6 @@ java {
     sourceCompatibility = JavaVersion.VERSION_21
     targetCompatibility = JavaVersion.VERSION_21
 }
+﻿
+Арт
+arkte22
