@@ -103,7 +103,7 @@ public final class ShieldSoundConfig {
         }
         sound = sound.trim();
         volume = Math.max(0.0f, Math.min(4.0f, volume));
-    
+        pitch = Math.max(0.5f, Math.min(2.0f, pitch));
     }
 
     /** Индекс звука в PRESETS или -1, если указан свой. */
