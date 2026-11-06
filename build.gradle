@@ -20,7 +20,7 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // Mod Menu нужен только при компиляции; у игрока он ставится отдельно (необязательно)
+    // Mod Menu нужен только для компиляции
     modCompileOnly "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
