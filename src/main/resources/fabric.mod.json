@@ -11,8 +11,8 @@
     "client": ["com.example.shieldsound.ShieldSoundClient"],
     "modmenu": ["com.example.shieldsound.ShieldSoundModMenu"]
   },
-  "depends": {
-    "fabricloader": ">=0.18.0",
+  "depends": {modCompileOnly "com.terraformersmc:modmenu:16.0.0"}
+   "fabricloader": ">=0.18.0",
     "minecraft": "~1.21.11",
     "java": ">=21",
     "fabric-api": "*"
