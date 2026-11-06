@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "id": "shieldsound",
+  "version": "${version}",
+  "name": "Shield Sound",
+  "description": "Plays a Minecraft sound when you (or other players nearby) lower a shield. Sound, volume and pitch are configurable via Mod Menu. Client-side only, no gameplay changes.",
+  "authors": ["You"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.example.shieldsound.ShieldSoundClient"],
+    "modmenu": ["com.example.shieldsound.ShieldSoundModMenu"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

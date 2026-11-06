@@ -1,17 +1,24 @@
-# Shield Sound (Fabric 1.21.11)
+# Shield Sound 1.1.0 (Fabric, Minecraft 1.21.11)
 
-Клиентский мод: когда вы опускаете щит, играет звук кувшинки (ванильный звук Minecraft).
-Звук слышен только вам, ничего не отправляется на сервер, геймплей не меняется.
+Что нового:
+- Звук играет и когда щит опускают ДРУГИЕ игроки рядом (затухание по расстоянию как у обычных звуков).
+- Меню настроек в Mod Menu (кнопка «Настроить»): вкл/выкл, свой щит / чужие щиты,
+  выбор звука из списка (◀ ▶, клик по названию — прослушать), свой ID звука, громкость 0–400%, высота тона.
+- По умолчанию звук разбитого кувшина (block.decorated_pot.shatter).
+- Громкость делается наложением слоёв и играет в категории MASTER, поэтому слышно
+  даже при тихих «Звуках игроков» в настройках игры. Настройки: config/shieldsound.json
 
-## Как собрать через GitHub
-1. Создайте новый репозиторий на github.com (кнопка New).
-2. Загрузите в него все файлы из этого архива (Add file -> Upload files), сохраняя папки,
-   включая скрытую папку `.github`.
-3. Откройте вкладку Actions и дождитесь зелёной галочки сборки.
-4. Откройте завершённую сборку и скачайте архив `shield-sound-mod` внизу страницы.
-5. Внутри будет файл `shield-sound-1.0.0.jar`. Положите его в папку `mods`.
+## Сборка
+Лучший способ — положить файлы в свой рабочий проект мода (тот, из которого собирался 1.0.0):
+1. Замени src/main/java/com/example/shieldsound/* и src/main/resources/fabric.mod.json файлами отсюда.
+2. В build.gradle добавь:
+   repositories { maven { url = 'https://maven.terraformersmc.com/releases/' } }
+   dependencies { modCompileOnly "com.terraformersmc:modmenu:16.0.0" }
+3. ./gradlew build  ->  build/libs/shield-sound-1.1.0.jar
 
-Нужны: Minecraft 1.21.11, Fabric Loader 0.18+ и Fabric API.
+Либо собери этим проектом целиком (нужен Gradle 9.2): `gradle build`.
+Если Gradle не находит yarn / fabric-api / modmenu — возьми актуальные версии для 1.21.11
+на https://fabricmc.net/develop и впиши в gradle.properties.
 
-## Сменить звук
-В файле `src/main/java/com/example/shieldsound/ShieldSoundClient.java` измените строку `SOUND`.
+## Установка
+Положи jar в mods/. Mod Menu и Fabric API должны стоять (Mod Menu — только чтобы открывать меню).
