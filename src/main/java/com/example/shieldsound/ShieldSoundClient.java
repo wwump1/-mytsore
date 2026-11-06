@@ -38,7 +38,7 @@ public class ShieldSoundClient implements ClientModInitializer {
         boolean blocking = client.player.isBlocking();
 
         if (wasBlocking && !blocking) {
-            client.getSoundManager().play(PositionedSoundInstance.master(SOUND, PITCH,));
+            client.getSoundManager().play(PositionedSoundInstance.master(SOUND, PITCH));
         }
 
         wasBlocking = blocking;
