@@ -103,7 +103,7 @@ public final class ShieldSoundConfig {
         }
         sound = sound.trim();
         volume = Math.max(0.0f, Math.min(4.0f, volume));
-        client.getSoundManager().play(PositionedSoundInstance.ui(event, cfg.pitch, layer));
+    
     }
 
     /** Индекс звука в PRESETS или -1, если указан свой. */
