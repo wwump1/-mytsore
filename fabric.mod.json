@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "id": "shieldsound",
+  "version": "${version}",
+  "name": "Shield Sound",
+  "description": "Plays a Minecraft sound (lily pad) on your client when you lower your shield. Client-side only, no gameplay changes.",
+  "authors": ["You"],
+  "license": "MIT",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["com.example.shieldsound.ShieldSoundClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.18.0",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
