@@ -27,11 +27,17 @@ public class ShieldSoundConfigScreen extends Screen {
     }
 
     @Override
-    protected void init() {
+    protected void init(ButtonWidget oppBtn = ButtonWidget.builder(toggleText("Только мой противник", cfg.onlyOpponents), b -> {
+    cfg.onlyOpponents = !cfg.onlyOpponents;
+    b.setMessage(toggleText("Только мой противник", cfg.onlyOpponents));
+}).dimensions(x, y, w, 20).build();
+this.addDrawableChild(oppBtn);
+y += step;) 
+{
         int w = 200;
         int x = this.width / 2 - w / 2;
         int step = 24;
-        int y = Math.max(28, (this.height - 236) / 2 + 20);
+        int y = Math.max(28, (this.height - 260) / 2 + 20);
 
         // --- переключатели ---
         ButtonWidget enabledBtn = ButtonWidget.builder(toggleText("Мод включён", cfg.enabled), b -> {
