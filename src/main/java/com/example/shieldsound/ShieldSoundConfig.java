@@ -51,6 +51,10 @@ public final class ShieldSoundConfig {
     public boolean playForSelf = true;
     /** Играть звук, когда щит опускают другие игроки. */
     public boolean playForOthers = true;
+    /** Слышать только противника (того, с кем я дерусь). Остальных игроков глушить. */
+    public boolean onlyOpponents = true;
+    /** Сколько секунд после последнего удара игрок считается моим противником (1–60). */
+    public int combatSeconds = 10;
     /** ID звука Minecraft (можно любой, в т.ч. из ресурспака). */
     public String sound = DEFAULT_SOUND;
     /** 0.0 – 4.0. Всё что выше 1.0 накладывается слоями, т.е. реально громче. */
@@ -104,6 +108,7 @@ public final class ShieldSoundConfig {
         sound = sound.trim();
         volume = Math.max(0.0f, Math.min(4.0f, volume));
         pitch = Math.max(0.5f, Math.min(2.0f, pitch));
+        combatSeconds = Math.max(1, Math.min(60, combatSeconds));
     }
 
     /** Индекс звука в PRESETS или -1, если указан свой. */
