@@ -1,81 +1,94 @@
-package com.example.shieldsound;
-
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.world.ClientWorld;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.random.Random;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.minecraft.util.ActionResult;
+import java.util.HashMap;
+import java.util.Map;
+// остальные импорты остаются как были
+private Set<Integer> blockingLastTick = new HashSet<>();
+/** id противника -> тик, до которого он считается противником */
+private final Map<Integer, Long> opponents = new HashMap<>();
+private ClientWorld lastWorld;
+private long tickCounter;
+private int lastHurtTime;
 
-import java.util.HashSet;
-import java.util.Set;
+@Override
+public void onInitializeClient() {
+    ShieldSoundConfig.load();
+    ClientTickEvents.END_CLIENT_TICK
+// Я ударил игрока -> он мой противник
+    AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+        if (world.isClient() && entity instanceof PlayerEntity target
+                && player == MinecraftClient.getInstance().player) {
+            markOpponent(target.getId());
+        }
+        return ActionResult.PASS;
+    });
+}
 
-/**
- * Клиентский мод: когда любой игрок рядом (в том числе ты сам) опускает щит,
- * проигрывается звук Minecraft, выбранный в меню настроек.
- * Звук слышит только твой клиент, на сервер ничего не отправляется.
- *
- * Состояние «поднят щит» у других игроков сервер и так рассылает всем клиентам
- * (это то же самое, что рисует анимацию щита), поэтому мод читает его локально.
- */
-public class ShieldSoundClient implements ClientModInitializer {
+private void markOpponent(int id) {
+    opponents.put(id, tickCounter + ShieldSoundConfig.get().combatSeconds * 20L);
+}
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("shieldsound");
-
-    /** ID сущностей, которые на прошлом тике держали щит поднятым. */
-    private Set<Integer> blockingLastTick = new HashSet<>();
-    private ClientWorld lastWorld;
-
-    @Override
-    public void onInitializeClient() {
-        ShieldSoundConfig.load();
-        ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
+private static PlayerEntity nearestPlayer(ClientWorld world, PlayerEntity me, double maxDist) {
+    PlayerEntity best = null;
+    double bestSq = maxDist * maxDist;
+    for (PlayerEntity p : world.getPlayers()) {
+        if (p == me || p.isSpectator()) continue;
+        double d = p.squaredDistanceTo(me);
+        if (d < bestSq) {
+            bestSq = d;
+            best = p;
+        }
     }
-
-    private void onTick(MinecraftClient client) {
-        ClientWorld world = client.world;
-        if (world == null || client.player == null) {
-            blockingLastTick.clear();
-            lastWorld = null;
-            return;
-        }
-        if (world != lastWorld) {
-            // смена мира/измерения — id сущностей больше не актуальны
-            blockingLastTick.clear();
-            lastWorld = world;
-        }
-
-        ShieldSoundConfig cfg = ShieldSoundConfig.get();
-        Set<Integer> blockingNow = new HashSet<>();
-
-        for (PlayerEntity player : world.getPlayers()) {
-            int id = player.getId();
-            boolean blocking = player.isBlocking();
-            if (blocking) {
-                blockingNow.add(id);
-            }
-
-            boolean loweredJustNow = blockingLastTick.contains(id) && !blocking;
-            if (!loweredJustNow || !cfg.enabled || player.isSpectator()) {
-                continue;
-            }
-
-            boolean isMe = player == client.player;
-            if (isMe ? cfg.playForSelf : cfg.playForOthers) {
-                playAt(client, cfg, player.getX(), player.getEyeY(), player.getZ());
-            }
-        }
-
-        blockingLastTick = blockingNow;
+    return best;
+}
+private void onTick(MinecraftClient client) {
+    ClientWorld world = client.world;
+    if (world == null || client.player == null) {
+        blockingLastTick.clear();
+        opponents.clear();
+        lastWorld = null;
+        return;
     }
+    if (world != lastWorld) {
+        blockingLastTick.clear();
+        opponents.clear();
+        lastWorld = world;
+    }
+    tickCounter++;
+    ShieldSoundConfig cfg = ShieldSoundConfig.get();
 
-    /** Звук в точке мира (для себя и для других игроков — с затуханием по расстоянию). */
+    // Меня ударили -> ближайший игрок рядом считается противником
+    int hurt = client.player.hurtTime;
+    if (hurt > 0 && lastHurtTime == 0) {
+        PlayerEntity attacker = nearestPlayer(world, client.player, 6.0);
+        if (attacker != null) markOpponent(attacker.getId());
+    }
+    lastHurtTime = hurt;
+
+    // Забываем тех, с кем давно не дрались
+    opponents.values().removeIf(until -> until < tickCounter);
+
+    Set<Integer> blockingNow = new HashSet<>();
+
+    for (PlayerEntity player : world.getPlayers()) {
+        int id = player.getId();
+        boolean blocking = player.isBlocking();
+        if (blocking) blockingNow.add(id);
+        boolean loweredJustNow = blockingLastTick.contains(id) && !blocking;
+        if (!loweredJustNow|| !cfg.enabled  player.isSpectator()) continue;
+
+        boolean isMe = player == client.player;
+        boolean allowed = isMe
+                ? cfg.playForSelf
+                : cfg.playForOthers && (!cfg.onlyOpponents || opponents.containsKey(id));
+
+        if (allowed) {
+            playAt(client, cfg, player.getX(), player.getEyeY(), player.getZ());
+        }
+    }
+    blockingLastTick = blockingNow;
+}
     private static void playAt(MinecraftClient client, ShieldSoundConfig cfg, double x, double y, double z) {
         SoundEvent event = eventFor(cfg.sound);
         if (event == null) {
