@@ -27,13 +27,7 @@ public class ShieldSoundConfigScreen extends Screen {
     }
 
     @Override
-    protected void init(ButtonWidget oppBtn = ButtonWidget.builder(toggleText("Только мой противник", cfg.onlyOpponents), b -> {
-    cfg.onlyOpponents = !cfg.onlyOpponents;
-    b.setMessage(toggleText("Только мой противник", cfg.onlyOpponents));
-}).dimensions(x, y, w, 20).build();
-this.addDrawableChild(oppBtn);
-y += step;) 
-{
+    protected void init() {
         int w = 200;
         int x = this.width / 2 - w / 2;
         int step = 24;
@@ -59,6 +53,13 @@ y += step;)
             b.setMessage(toggleText("Звук для других игроков", cfg.playForOthers));
         }).dimensions(x, y, w, 20).build();
         this.addDrawableChild(othersBtn);
+        y += step;
+
+        ButtonWidget oppBtn = ButtonWidget.builder(toggleText("Только мой противник", cfg.onlyOpponents), b -> {
+            cfg.onlyOpponents = !cfg.onlyOpponents;
+            b.setMessage(toggleText("Только мой противник", cfg.onlyOpponents));
+        }).dimensions(x, y, w, 20).build();
+        this.addDrawableChild(oppBtn);
         y += step;
 
         // --- выбор звука: [<] [название — нажми, чтобы прослушать] [>] ---
