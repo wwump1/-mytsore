@@ -84,7 +84,7 @@ public final class ShieldSoundConfig {
                 ShieldSoundClient.LOGGER.warn("Не удалось прочитать shieldsound.json, беру значения по умолчанию", e);
             }
         }
-        instance.sanitize();
+        instance.sanitize(combatSeconds = Math.max(1, Math.min(60, combatSeconds));
         save();
     }
 
@@ -116,3 +116,7 @@ public final class ShieldSoundConfig {
         return -1;
     }
 }
+/** Слышать только противника (того, с кем я дерусь). Остальных игроков глушить. */
+public boolean onlyOpponents = true;
+/** Сколько секунд после последнего удара игрок считается моим противником. */
+public int combatSeconds = 10;
