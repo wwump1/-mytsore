@@ -166,7 +166,7 @@ public class ShieldSoundClient implements ClientModInitializer {
         while (remaining > 0.01f) {
             float layer = Math.min(1.0f, remaining);
             remaining -= 1.0f;
-            client.getSoundManager().play(PositionedSoundInstance.master(event, cfg.pitch, layer));
+           client.getSoundManager().play(PositionedSoundInstance.ui(event, cfg.pitch, layer));
         }
     }
 
