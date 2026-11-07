@@ -14,8 +14,8 @@ private int lastHurtTime;
 @Override
 public void onInitializeClient() {
     ShieldSoundConfig.load();
-    ClientTickEvents.END_CLIENT_TICK
-// Я ударил игрока -> он мой противник
+    ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
+
     AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
         if (world.isClient() && entity instanceof PlayerEntity target
                 && player == MinecraftClient.getInstance().player) {
@@ -76,7 +76,7 @@ private void onTick(MinecraftClient client) {
         boolean blocking = player.isBlocking();
         if (blocking) blockingNow.add(id);
         boolean loweredJustNow = blockingLastTick.contains(id) && !blocking;
-        if (!loweredJustNow|| !cfg.enabled  player.isSpectator()) continue;
+        if (!loweredJustNow || !cfg.enabled || player.isSpectator()) continue;
 
         boolean isMe = player == client.player;
         boolean allowed = isMe
